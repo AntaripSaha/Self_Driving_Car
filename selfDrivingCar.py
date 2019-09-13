@@ -2,6 +2,42 @@ import cv2 as cv
 import numpy as np
 #import matplotlib.pyplot as plt
 
+#coordinate calculation, it will start from very bottom and will go 3 blocks
+def make_coordinates(image, line_parameters):
+    slope, intercept = line_parameters
+    y1 = image.shape[0]
+    y2 = int(y1 * (3 / 5))
+    x1 = int ((y1- intercept)/slope)
+    x2 = int((y2 - intercept) / slope)
+    return np.array([x1, y1, x2, y2])
+
+
+
+
+
+#func for average the lines
+def avg_slope_intercept(image, lines):
+    left_fit = []
+    right_fit = []
+    for line in lines:
+        x1, y1, x2, y2 = line.reshape(4)
+        parameters = np.polyfit((x1, x2), (y1, y2), 1)
+        slope = parameters[0]
+        intercept = parameters[1]
+        if slope < 0:
+            left_fit.append((slope,intercept))
+        else:
+            right_fit.append((slope, intercept))
+    left_fit_avg = np.average(left_fit, axis=0)
+    right_fit_avg = np.average(right_fit, axis=0)
+    left_line = make_coordinates(image, left_fit_avg)
+    right_line = make_coordinates(image, right_fit_avg)
+    return np.array([left_line, right_line])
+
+
+
+
+
 
 # This function will help to coverting the RGB image to very simple image so that les computational power requires...
 def canny_filter (image):
@@ -39,12 +75,9 @@ def region_of_interst (image):
 def display_lines(image, lines):
     line_img = np.zeros_like(image)
     if lines is not None:
-        for line in lines:
-            x1 , y1, x2, y2 = line.reshape(4)
+        for x1 , y1, x2, y2 in lines:
             cv.line(line_img,(x1, y1), (x2, y2), (0,255,0), 5)
     return line_img
-
-
 
 # normally reading a image from dataset
 img = cv.imread('DataSet/tti.jpg')
@@ -54,15 +87,19 @@ img = cv.imread('DataSet/tti.jpg')
 lane_img = np.copy(img)
 
 # calling canny filter function
-canny = canny_filter(lane_img)
+canny_img = canny_filter(lane_img)
 
-croped_img = region_of_interst(canny)
+croped_img = region_of_interst(canny_img)
 
 # Hough transform
 lines = cv.HoughLinesP(croped_img , 2 , np.pi/180, 100 , np.array([]), minLineLength= 40 , maxLineGap= 5)
 
+
+#smoothing and average of lines
+average_lines = avg_slope_intercept(lane_img,lines)
+
 # sending the two parameters in display_lines function, copy of main image and the hough transform algo
-line_img = display_lines(lane_img, lines)
+line_img = display_lines(lane_img, average_lines)
 
 
 #combining the lines with the main images.
