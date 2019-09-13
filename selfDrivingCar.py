@@ -1,6 +1,6 @@
 import cv2 as cv
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 
 # This function will help to coverting the RGB image to very simple image so that les computational power requires...
@@ -34,6 +34,20 @@ def region_of_interst (image):
     masked_img = cv.bitwise_and(image, mask)
     return masked_img
 
+#This function will take the hough transform  algo and process it here
+
+def display_lines(image, lines):
+    line_img = np.zeros_like(image)
+    if lines is not None:
+        for line in lines:
+            x1 , y1, x2, y2 = line.reshape(4)
+            cv.line(line_img,(x1, y1), (x2, y2), (0,255,0), 5)
+    return line_img
+
+
+
+
+
 
 
 # normally reading a image from dataset
@@ -48,10 +62,21 @@ canny = canny_filter(lane_img)
 
 croped_img = region_of_interst(canny)
 
-cv.imshow('result', region_of_interst(croped_img))
+# Hough transform
+lines = cv.HoughLinesP(croped_img , 2 , np.pi/180, 100 , np.array([]), minLineLength= 40 , maxLineGap= 5)
+
+# sending the two parameters in display_lines function, copy of main image and the hough transform algo
+line_img = display_lines(lane_img, lines)
+
+
+#combining the lines with the main images.
+
+combo_img = cv.addWeighted(lane_img, 0.8, line_img, 1, 1)
 
 # printing the image in matplot, or we can say as with height and width (x,y)
+cv.imshow('result', combo_img)
 #plt.imshow(canny)
+
 
 # cv.waitkey(0) it's not nessasary..
 cv.waitKey(0)
