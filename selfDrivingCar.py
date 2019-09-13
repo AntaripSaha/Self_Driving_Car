@@ -71,39 +71,59 @@ def display_lines(image, lines):
             cv.line(line_img,(x1, y1), (x2, y2), (0,255,0), 5)
     return line_img
 
-# normally reading a image from dataset
+
+
+''''' normally reading a image from dataset
 img = cv.imread('DataSet/tti.jpg')
 #cv.imshow('result', img)
 # need to copy the image because
 # if main image change then there will be problem in next steps
 lane_img = np.copy(img)
-
 # calling canny filter function
 canny_img = canny_filter(lane_img)
-
 croped_img = region_of_interst(canny_img)
-
 # Hough transform
 lines = cv.HoughLinesP(croped_img , 2 , np.pi/180, 100 , np.array([]), minLineLength= 40 , maxLineGap= 5)
-
-
 #smoothing and average of lines
 average_lines = avg_slope_intercept(lane_img,lines)
-
 # sending the two parameters in display_lines function, copy of main image and the hough transform algo
 line_img = display_lines(lane_img, average_lines)
-
-
 #combining the lines with the main images.
-
 combo_img = cv.addWeighted(lane_img, 0.8, line_img, 1, 1)
-
 # printing the image in matplot, or we can say as with height and width (x,y)
 cv.imshow('result', combo_img)
 #plt.imshow(canny)
-
-
 # cv.waitkey(0) it's not nessasary..
 cv.waitKey(0)
 cv.destroyAllWindows()
 #plt.show()
+'''''
+
+
+
+# working with vedio , concept is same as previous, just a little bit changes
+
+cap = cv.VideoCapture('DataSet/test2.mp4')
+while(cap.isOpened()):
+    _, frame = cap.read()
+
+    # calling canny filter function
+    canny_img = canny_filter(frame)
+    croped_img = region_of_interst(canny_img)
+    # Hough transform
+    lines = cv.HoughLinesP(croped_img, 2, np.pi / 180, 100, np.array([]), minLineLength=40, maxLineGap=5)
+    # smoothing and average of lines
+    average_lines = avg_slope_intercept(frame, lines)
+    # sending the two parameters in display_lines function, copy of main image and the hough transform algo
+    line_img = display_lines(frame, average_lines)
+    # combining the lines with the main images.
+    combo_img = cv.addWeighted(frame, 0.8, line_img, 1, 1)
+    # printing the image in matplot, or we can say as with height and width (x,y)
+    cv.imshow('result', combo_img)
+    if cv.waitKey(0) & 0xFF== ord('q'):
+        break
+
+
+    cap.release()
+    cv.destroyAllWindows()
+
