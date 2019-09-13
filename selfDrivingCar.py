@@ -46,10 +46,6 @@ def display_lines(image, lines):
 
 
 
-
-
-
-
 # normally reading a image from dataset
 img = cv.imread('DataSet/tti.jpg')
 #cv.imshow('result', img)
