@@ -6,13 +6,10 @@ import numpy as np
 def make_coordinates(image, line_parameters):
     slope, intercept = line_parameters
     y1 = image.shape[0]
-    y2 = int(y1 * (3 / 5))
-    x1 = int ((y1- intercept)/slope)
+    y2 = int(y1 * (3 / 5))  # the main equation is (y= mx+b), 
+    x1 = int ((y1- intercept)/slope) # intercept=b , slope = m..
     x2 = int((y2 - intercept) / slope)
     return np.array([x1, y1, x2, y2])
-
-
-
 
 
 #func for average the lines
@@ -33,11 +30,6 @@ def avg_slope_intercept(image, lines):
     left_line = make_coordinates(image, left_fit_avg)
     right_line = make_coordinates(image, right_fit_avg)
     return np.array([left_line, right_line])
-
-
-
-
-
 
 # This function will help to coverting the RGB image to very simple image so that les computational power requires...
 def canny_filter (image):
