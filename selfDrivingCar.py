@@ -11,7 +11,6 @@ def make_coordinates(image, line_parameters):
     x2 = int((y2 - intercept) / slope)
     return np.array([x1, y1, x2, y2])
 
-
 #func for average the lines
 def avg_slope_intercept(image, lines):
     left_fit = []
@@ -46,7 +45,6 @@ def canny_filter (image):
     #cv.waitKey(0)
     return canny
 
-
 # here in this function we will identify the required places from a picture.
 def region_of_interst (image):
     height = image.shape[0] #the value of Y
@@ -70,8 +68,6 @@ def display_lines(image, lines):
         for x1 , y1, x2, y2 in lines:
             cv.line(line_img,(x1, y1), (x2, y2), (0,255,0), 5)
     return line_img
-
-
 
 ''''' normally reading a image from dataset
 img = cv.imread('DataSet/tti.jpg')
@@ -99,8 +95,6 @@ cv.destroyAllWindows()
 #plt.show()
 '''''
 
-
-
 # working with vedio , concept is same as previous, just a little bit changes
 
 cap = cv.VideoCapture('DataSet/test2.mp4')
@@ -122,8 +116,7 @@ while(cap.isOpened()):
     cv.imshow('result', combo_img)
     if cv.waitKey(0) & 0xFF== ord('q'):
         break
-
-
     cap.release()
     cv.destroyAllWindows()
-
+    
+    
